@@ -1,6 +1,17 @@
-import { Body, Controller, Get, Param, ParseUUIDPipe, Patch, Post, UsePipes, ValidationPipe } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Post,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { TaskService } from './task.service';
-import { TaskDto } from './task.dto';
+import { CreateTaskDto } from './dto/create-task.dto';
+import { UpdateTaskPriorityDto } from './dto/update-task-priority.dto';
 
 @Controller('task')
 export class TaskController {
@@ -18,7 +29,7 @@ export class TaskController {
 
   @Post()
   @UsePipes(new ValidationPipe())
-  async createTask(@Body() dto: TaskDto) {
+  async createTask(@Body() dto: CreateTaskDto) {
     return await this.taskService.create(dto);
   }
 
@@ -27,6 +38,12 @@ export class TaskController {
     return await this.taskService.toggle(id);
   }
 
-  // @todo
-  async changePriority() {}
+  @Patch('priority/:id')
+  @UsePipes(new ValidationPipe())
+  async changePriority(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: UpdateTaskPriorityDto,
+  ) {
+    return await this.taskService.changePriority(id, dto.priority);
+  }
 }
