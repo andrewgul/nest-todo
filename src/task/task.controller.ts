@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseUUIDPipe, Patch, Post, UsePipes, ValidationPipe } from '@nestjs/common';
 import { TaskService } from './task.service';
 import { TaskDto } from './task.dto';
 
@@ -8,12 +8,25 @@ export class TaskController {
 
   @Get()
   async getTasks() {
-    return this.taskService.findAll();
+    return await this.taskService.findAll();
+  }
+
+  @Get(':id')
+  async getTask(@Param('id', ParseUUIDPipe) id: string) {
+    return await this.taskService.getById(id);
   }
 
   @Post()
   @UsePipes(new ValidationPipe())
   async createTask(@Body() dto: TaskDto) {
-    return this.taskService.create(dto)
+    return await this.taskService.create(dto);
   }
+
+  @Patch(':id')
+  async toggle(@Param('id', ParseUUIDPipe) id: string) {
+    return await this.taskService.toggle(id);
+  }
+
+  // @todo
+  async changePriority() {}
 }
