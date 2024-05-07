@@ -18,13 +18,24 @@ export class TaskService {
     return task;
   }
 
-  async findAll() {
-    return await this.prisma.task.findMany();
+  async findAll(userId: string) {
+    return await this.prisma.task.findMany({
+      where: {
+        userId: userId,
+      },
+    });
   }
 
-  async create(dto: CreateTaskDto) {
+  async create(dto: CreateTaskDto, userId: string) {
     return await this.prisma.task.create({
-      data: dto,
+      data: {
+        ...dto,
+        user: {
+          connect: {
+            id: userId,
+          },
+        },
+      },
     });
   }
 

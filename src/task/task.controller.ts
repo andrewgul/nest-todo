@@ -9,6 +9,7 @@ import {
   UseGuards,
   UsePipes,
   ValidationPipe,
+  Request,
 } from '@nestjs/common';
 import { TaskService } from './task.service';
 import { CreateTaskDto } from './dto/create-task.dto';
@@ -21,8 +22,10 @@ export class TaskController {
   constructor(private readonly taskService: TaskService) {}
 
   @Get()
-  async getTasks() {
-    return await this.taskService.findAll();
+  async getTasks(@Request() req) {
+    const userId = req['user'].sub;
+
+    return await this.taskService.findAll(userId);
   }
 
   @Get(':id')
@@ -32,8 +35,10 @@ export class TaskController {
 
   @Post()
   @UsePipes(new ValidationPipe())
-  async createTask(@Body() dto: CreateTaskDto) {
-    return await this.taskService.create(dto);
+  async createTask(@Body() dto: CreateTaskDto, @Request() req) {
+    const userId = req['user'].sub;
+
+    return await this.taskService.create(dto, userId);
   }
 
   @Patch(':id')
